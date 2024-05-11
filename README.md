@@ -1,5 +1,18 @@
 # Animalia Backend REST API
 
+## REST API Endpoints
+
+| Endpoint       | HTTP     | Description         |
+| -------------- | -------- | ------------------- |
+| `/animals`     | `GET`    | Get all animals     |
+| `/animals/:id` | `GET`    | Get animal by id    |
+| `/animals`     | `POST`   | Add new animal      |
+| `/animals`     | `DELETE` | Delete all animals  |
+| `/animals/:id` | `DELETE` | Delete animal by id |
+| `/animals/:id` | `PUT`    | Update animal by id |
+
+## Getting Started
+
 To install dependencies:
 
 ```sh
