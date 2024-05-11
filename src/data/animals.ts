@@ -1,8 +1,8 @@
 type Animal = {
   id: number;
   name: string;
-  scientificName: string;
-  speed: number;
+  scientificName?: string;
+  speed?: number;
   class?: string;
   domain?: string;
   family?: string;

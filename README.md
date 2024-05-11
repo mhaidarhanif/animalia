@@ -2,6 +2,9 @@
 
 ## REST API Endpoints
 
+- Production: `https://animalia.haidar.dev`
+- Local: `http://localhost:3000`
+
 | Endpoint       | HTTP     | Description         |
 | -------------- | -------- | ------------------- |
 | `/animals`     | `GET`    | Get all animals     |
