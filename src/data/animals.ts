@@ -26,4 +26,13 @@ export const dataAnimals: Animal[] = [
     family: "Felidae",
     speed: 48, // km/h
   },
+  {
+    id: 3,
+    name: "Dog",
+    scientificName: "Canis lupus familiaris",
+    class: "Mammalia",
+    domain: "Eukaryota",
+    family: "Canidae",
+    speed: 60, // km/h
+  },
 ];

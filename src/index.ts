@@ -60,6 +60,25 @@ app.delete("/animals", (c) => {
   return c.json({ message: "All animals data have been removed" });
 });
 
+app.delete("/animals/:id", (c) => {
+  const id = Number(c.req.param("id"));
+
+  const animal = animals.find((animal) => animal.id === id);
+
+  if (!animal) {
+    c.status(404);
+    return c.json({ message: "Animal not found" });
+  }
+
+  const updatedAnimals = animals.filter((animal) => animal.id !== id);
+
+  animals = updatedAnimals;
+
+  return c.json({
+    message: `Deleted animal with id ${id}`,
+  });
+});
+
 console.log("Animalia API is running");
 
 export default app;
