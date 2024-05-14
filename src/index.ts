@@ -97,12 +97,12 @@ app.put("/animals/:id", async (c) => {
 
   const newAnimal = {
     ...animal,
-    name: body.name,
-    scientificName: body.scientificName,
-    speed: body.speed,
-    class: body.class,
-    domain: body.domain,
-    family: body.family,
+    name: body.name || animal.name,
+    scientificName: body.scientificName || animal.scientificName,
+    speed: body.speed || animal.speed,
+    class: body.class || animal.class,
+    domain: body.domain || animal.domain,
+    family: body.family || animal.family,
   };
 
   const updatedAnimals = animals.map((animal) => {
