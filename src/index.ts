@@ -34,6 +34,11 @@ app.get("/animals/:id", (c) => {
   return c.json(animal);
 });
 
+app.post("/animals/seed", async (c) => {
+  animals = dataAnimals;
+  return c.json(animals);
+});
+
 app.post("/animals", async (c) => {
   const body = await c.req.json();
 
@@ -47,6 +52,12 @@ app.post("/animals", async (c) => {
   animals = [...animals, newAnimal];
 
   return c.json({ animal: newAnimal });
+});
+
+app.delete("/animals", (c) => {
+  animals = [];
+
+  return c.json({ message: "All animals data have been removed" });
 });
 
 console.log("Animalia API is running");
