@@ -1,0 +1,14 @@
+services:
+  api:
+    image: demo-api
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database
+  database:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: example_user
+      POSTGRES_PASSWORD: example_password

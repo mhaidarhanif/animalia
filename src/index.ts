@@ -49,4 +49,6 @@ app.post("/animals", async (c) => {
   return c.json({ animal: newAnimal });
 });
 
+console.log("Animalia API is running");
+
 export default app;

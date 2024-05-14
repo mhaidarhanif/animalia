@@ -2,8 +2,7 @@
   "name": "animalia",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "build": "",
-    "start": ""
+    "start": "bun run src/index.ts"
   },
   "dependencies": {
     "hono": "^4.3.4"
