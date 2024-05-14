@@ -47,6 +47,11 @@ app.post("/animals", async (c) => {
   const newAnimal = {
     id: nextId,
     name: body.name,
+    scientificName: body.scientificName,
+    speed: body.speed,
+    class: body.class,
+    domain: body.domain,
+    family: body.family,
   };
 
   animals = [...animals, newAnimal];
@@ -76,6 +81,43 @@ app.delete("/animals/:id", (c) => {
 
   return c.json({
     message: `Deleted animal with id ${id}`,
+  });
+});
+
+app.put("/animals/:id", async (c) => {
+  const id = Number(c.req.param("id"));
+  const body = await c.req.json();
+
+  const animal = animals.find((animal) => animal.id === id);
+
+  if (!animal) {
+    c.status(404);
+    return c.json({ message: "Animal not found" });
+  }
+
+  const newAnimal = {
+    ...animal,
+    name: body.name,
+    scientificName: body.scientificName,
+    speed: body.speed,
+    class: body.class,
+    domain: body.domain,
+    family: body.family,
+  };
+
+  const updatedAnimals = animals.map((animal) => {
+    if (animal.id === id) {
+      return newAnimal;
+    } else {
+      return animal;
+    }
+  });
+
+  animals = updatedAnimals;
+
+  return c.json({
+    message: `Updated animal with id ${id}`,
+    animal: newAnimal,
   });
 });
 
