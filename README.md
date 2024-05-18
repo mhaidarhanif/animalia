@@ -15,6 +15,10 @@
 | `/animals/:id`  | `DELETE` | Delete animal by id      |
 | `/animals/:id`  | `PUT`    | Update animal by id      |
 
+## Database Design/Schema/ERD
+
+![ERD](./assets/animalia-erd.svg)
+
 ## Getting Started
 
 To install dependencies:
