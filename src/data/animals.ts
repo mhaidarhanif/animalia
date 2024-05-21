@@ -1,4 +1,4 @@
-type Animal = {
+export type Animal = {
   id: number;
   name: string;
   scientificName?: string;

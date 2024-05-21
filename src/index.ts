@@ -1,8 +1,11 @@
 import { Hono } from "hono";
 
-import { dataAnimals } from "./data/animals";
+import { Animal, dataAnimals } from "./data/animals.ts";
+import { client } from "./lib/db.ts";
 
-let animals = dataAnimals;
+await client.connect();
+
+let animalsArray = dataAnimals;
 
 const app = new Hono();
 
@@ -17,14 +20,18 @@ app.get("/", (c) => {
   return c.json({ message: "Hello world" });
 });
 
-app.get("/animals", (c) => {
+app.get("/animals", async (c) => {
+  const res = await client.query("SELECT * FROM animals");
+  const animals = res.rows as Animal[];
   return c.json(animals);
 });
 
-app.get("/animals/:id", (c) => {
+app.get("/animals/:id", async (c) => {
   const id = Number(c.req.param("id"));
 
-  const animal = animals.find((animal) => animal.id === id);
+  const res = await client.query(`SELECT * FROM animals WHERE id = ${id}`);
+
+  const animal = res.rows[0] as Animal;
 
   if (!animal) {
     c.status(404);
@@ -35,14 +42,14 @@ app.get("/animals/:id", (c) => {
 });
 
 app.post("/animals/seed", async (c) => {
-  animals = dataAnimals;
-  return c.json(animals);
+  animalsArray = dataAnimals;
+  return c.json(animalsArray);
 });
 
 app.post("/animals", async (c) => {
   const body = await c.req.json();
 
-  const nextId = animals[animals.length - 1].id + 1;
+  const nextId = animalsArray[animalsArray.length - 1].id + 1;
 
   const newAnimal = {
     id: nextId,
@@ -54,13 +61,13 @@ app.post("/animals", async (c) => {
     family: body.family,
   };
 
-  animals = [...animals, newAnimal];
+  animalsArray = [...animalsArray, newAnimal];
 
   return c.json({ animal: newAnimal });
 });
 
 app.delete("/animals", (c) => {
-  animals = [];
+  animalsArray = [];
 
   return c.json({ message: "All animals data have been removed" });
 });
@@ -68,16 +75,16 @@ app.delete("/animals", (c) => {
 app.delete("/animals/:id", (c) => {
   const id = Number(c.req.param("id"));
 
-  const animal = animals.find((animal) => animal.id === id);
+  const animal = animalsArray.find((animal) => animal.id === id);
 
   if (!animal) {
     c.status(404);
     return c.json({ message: "Animal not found" });
   }
 
-  const updatedAnimals = animals.filter((animal) => animal.id !== id);
+  const updatedAnimals = animalsArray.filter((animal) => animal.id !== id);
 
-  animals = updatedAnimals;
+  animalsArray = updatedAnimals;
 
   return c.json({
     message: `Deleted animal with id ${id}`,
@@ -88,7 +95,7 @@ app.put("/animals/:id", async (c) => {
   const id = Number(c.req.param("id"));
   const body = await c.req.json();
 
-  const animal = animals.find((animal) => animal.id === id);
+  const animal = animalsArray.find((animal) => animal.id === id);
 
   if (!animal) {
     c.status(404);
@@ -105,7 +112,7 @@ app.put("/animals/:id", async (c) => {
     family: body.family || animal.family,
   };
 
-  const updatedAnimals = animals.map((animal) => {
+  const updatedAnimals = animalsArray.map((animal) => {
     if (animal.id === id) {
       return newAnimal;
     } else {
@@ -113,7 +120,7 @@ app.put("/animals/:id", async (c) => {
     }
   });
 
-  animals = updatedAnimals;
+  animalsArray = updatedAnimals;
 
   return c.json({
     message: `Updated animal with id ${id}`,
