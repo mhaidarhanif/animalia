@@ -11,6 +11,13 @@ datasource db {
 }
 
 model Animal {
-  id   Int    @id @default(autoincrement())
-  name String @db.VarChar(255)
+  id             Int      @id @default(autoincrement())
+  name           String   @db.VarChar(255)
+  scientificName String?
+  speed          Float?
+  class          String?
+  domain         String?
+  family         String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
 }
