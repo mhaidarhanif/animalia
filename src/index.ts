@@ -1,9 +1,7 @@
 import { Hono } from "hono";
 
-import { Animal, dataAnimals } from "./data/animals.ts";
+import { dataAnimals } from "./data/animals.ts";
 import { prisma } from "./lib/db.ts";
-
-let animalsArray = dataAnimals;
 
 const app = new Hono();
 
@@ -14,10 +12,12 @@ const app = new Hono();
 // `/animals/:id` | `DELETE` | Delete animal by id |
 // `/animals/:id` | `PUT`    | Update animal by id |
 
-// app.post("/animals/seed", async (c) => {
-//   animalsArray = dataAnimals;
-//   return c.json(animalsArray);
-// });
+app.post("/animals/seed", async (c) => {
+  const animals = await prisma.animal.createMany({
+    data: dataAnimals,
+  });
+  return c.json(animals);
+});
 
 app.get("/", (c) => {
   return c.json({ message: "Hello world" });
@@ -47,7 +47,12 @@ app.post("/animals", async (c) => {
   const body = await c.req.json();
 
   const animalData = {
-    name: body.name,
+    name: String(body.name),
+    scientificName: String(body.scientificName),
+    speed: Number(body.speed),
+    class: String(body.class),
+    domain: String(body.domain),
+    family: String(body.family),
   };
 
   const animal = await prisma.animal.create({
@@ -84,7 +89,12 @@ app.put("/animals/:id", async (c) => {
   const body = await c.req.json();
 
   const animalData = {
-    name: body.name,
+    name: String(body.name),
+    scientificName: String(body.scientificName),
+    speed: Number(body.speed),
+    class: String(body.class),
+    domain: String(body.domain),
+    family: String(body.family),
   };
 
   const updatedAnimal = await prisma.animal.update({
