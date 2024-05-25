@@ -1,9 +1,7 @@
 import { Hono } from "hono";
 
 import { Animal, dataAnimals } from "./data/animals.ts";
-import { client } from "./lib/db.ts";
-
-await client.connect();
+import { prisma } from "./lib/db.ts";
 
 let animalsArray = dataAnimals;
 
@@ -16,22 +14,26 @@ const app = new Hono();
 // `/animals/:id` | `DELETE` | Delete animal by id |
 // `/animals/:id` | `PUT`    | Update animal by id |
 
+// app.post("/animals/seed", async (c) => {
+//   animalsArray = dataAnimals;
+//   return c.json(animalsArray);
+// });
+
 app.get("/", (c) => {
   return c.json({ message: "Hello world" });
 });
 
 app.get("/animals", async (c) => {
-  const res = await client.query("SELECT * FROM animals");
-  const animals = res.rows as Animal[];
+  const animals = await prisma.animal.findMany();
   return c.json(animals);
 });
 
 app.get("/animals/:id", async (c) => {
   const id = Number(c.req.param("id"));
 
-  const res = await client.query(`SELECT * FROM animals WHERE id = ${id}`);
-
-  const animal = res.rows[0] as Animal;
+  const animal = await prisma.animal.findUnique({
+    where: { id },
+  });
 
   if (!animal) {
     c.status(404);
@@ -41,53 +43,39 @@ app.get("/animals/:id", async (c) => {
   return c.json(animal);
 });
 
-app.post("/animals/seed", async (c) => {
-  animalsArray = dataAnimals;
-  return c.json(animalsArray);
-});
-
 app.post("/animals", async (c) => {
   const body = await c.req.json();
 
-  const nextId = animalsArray[animalsArray.length - 1].id + 1;
-
-  const newAnimal = {
-    id: nextId,
+  const animalData = {
     name: body.name,
-    scientificName: body.scientificName,
-    speed: body.speed,
-    class: body.class,
-    domain: body.domain,
-    family: body.family,
   };
 
-  animalsArray = [...animalsArray, newAnimal];
+  const animal = await prisma.animal.create({
+    data: animalData,
+  });
 
-  return c.json({ animal: newAnimal });
+  return c.json({ animal });
 });
 
-app.delete("/animals", (c) => {
-  animalsArray = [];
+app.delete("/animals", async (c) => {
+  const result = await prisma.animal.deleteMany();
 
-  return c.json({ message: "All animals data have been removed" });
+  return c.json({
+    message: "All animals data have been removed",
+    result,
+  });
 });
 
-app.delete("/animals/:id", (c) => {
+app.delete("/animals/:id", async (c) => {
   const id = Number(c.req.param("id"));
 
-  const animal = animalsArray.find((animal) => animal.id === id);
-
-  if (!animal) {
-    c.status(404);
-    return c.json({ message: "Animal not found" });
-  }
-
-  const updatedAnimals = animalsArray.filter((animal) => animal.id !== id);
-
-  animalsArray = updatedAnimals;
+  const deletedAnimal = await prisma.animal.delete({
+    where: { id },
+  });
 
   return c.json({
     message: `Deleted animal with id ${id}`,
+    deletedAnimal,
   });
 });
 
@@ -95,36 +83,18 @@ app.put("/animals/:id", async (c) => {
   const id = Number(c.req.param("id"));
   const body = await c.req.json();
 
-  const animal = animalsArray.find((animal) => animal.id === id);
-
-  if (!animal) {
-    c.status(404);
-    return c.json({ message: "Animal not found" });
-  }
-
-  const newAnimal = {
-    ...animal,
-    name: body.name || animal.name,
-    scientificName: body.scientificName || animal.scientificName,
-    speed: body.speed || animal.speed,
-    class: body.class || animal.class,
-    domain: body.domain || animal.domain,
-    family: body.family || animal.family,
+  const animalData = {
+    name: body.name,
   };
 
-  const updatedAnimals = animalsArray.map((animal) => {
-    if (animal.id === id) {
-      return newAnimal;
-    } else {
-      return animal;
-    }
+  const updatedAnimal = await prisma.animal.update({
+    where: { id },
+    data: animalData,
   });
-
-  animalsArray = updatedAnimals;
 
   return c.json({
     message: `Updated animal with id ${id}`,
-    animal: newAnimal,
+    updatedAnimal,
   });
 });
 
