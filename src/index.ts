@@ -1,3 +1,4 @@
+import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 
 import { dataAnimals } from "./data/animals.ts";
@@ -110,4 +111,4 @@ app.put("/animals/:id", async (c) => {
 
 console.log("Animalia API is running");
 
-export default app;
+serve({ fetch: app.fetch });
