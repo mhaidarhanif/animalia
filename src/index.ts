@@ -1,8 +1,7 @@
 import { Hono } from "hono";
 
 import { dataAnimals } from "./data/animals.ts";
-
-let animals = dataAnimals;
+import { prisma } from "./lib/db.ts";
 
 const app = new Hono();
 
@@ -13,18 +12,28 @@ const app = new Hono();
 // `/animals/:id` | `DELETE` | Delete animal by id |
 // `/animals/:id` | `PUT`    | Update animal by id |
 
+app.post("/animals/seed", async (c) => {
+  const animals = await prisma.animal.createMany({
+    data: dataAnimals,
+  });
+  return c.json(animals);
+});
+
 app.get("/", (c) => {
   return c.json({ message: "Hello world" });
 });
 
-app.get("/animals", (c) => {
+app.get("/animals", async (c) => {
+  const animals = await prisma.animal.findMany();
   return c.json(animals);
 });
 
-app.get("/animals/:id", (c) => {
+app.get("/animals/:id", async (c) => {
   const id = Number(c.req.param("id"));
 
-  const animal = animals.find((animal) => animal.id === id);
+  const animal = await prisma.animal.findUnique({
+    where: { id },
+  });
 
   if (!animal) {
     c.status(404);
@@ -34,53 +43,44 @@ app.get("/animals/:id", (c) => {
   return c.json(animal);
 });
 
-app.post("/animals/seed", async (c) => {
-  animals = dataAnimals;
-  return c.json(animals);
-});
-
 app.post("/animals", async (c) => {
   const body = await c.req.json();
 
-  const nextId = animals[animals.length - 1].id + 1;
-
-  const newAnimal = {
-    id: nextId,
-    name: body.name,
-    scientificName: body.scientificName,
-    speed: body.speed,
-    class: body.class,
-    domain: body.domain,
-    family: body.family,
+  const animalData = {
+    name: String(body.name),
+    scientificName: String(body.scientificName),
+    speed: Number(body.speed),
+    class: String(body.class),
+    domain: String(body.domain),
+    family: String(body.family),
   };
 
-  animals = [...animals, newAnimal];
+  const animal = await prisma.animal.create({
+    data: animalData,
+  });
 
-  return c.json({ animal: newAnimal });
+  return c.json({ animal });
 });
 
-app.delete("/animals", (c) => {
-  animals = [];
+app.delete("/animals", async (c) => {
+  const result = await prisma.animal.deleteMany();
 
-  return c.json({ message: "All animals data have been removed" });
+  return c.json({
+    message: "All animals data have been removed",
+    result,
+  });
 });
 
-app.delete("/animals/:id", (c) => {
+app.delete("/animals/:id", async (c) => {
   const id = Number(c.req.param("id"));
 
-  const animal = animals.find((animal) => animal.id === id);
-
-  if (!animal) {
-    c.status(404);
-    return c.json({ message: "Animal not found" });
-  }
-
-  const updatedAnimals = animals.filter((animal) => animal.id !== id);
-
-  animals = updatedAnimals;
+  const deletedAnimal = await prisma.animal.delete({
+    where: { id },
+  });
 
   return c.json({
     message: `Deleted animal with id ${id}`,
+    deletedAnimal,
   });
 });
 
@@ -88,36 +88,23 @@ app.put("/animals/:id", async (c) => {
   const id = Number(c.req.param("id"));
   const body = await c.req.json();
 
-  const animal = animals.find((animal) => animal.id === id);
-
-  if (!animal) {
-    c.status(404);
-    return c.json({ message: "Animal not found" });
-  }
-
-  const newAnimal = {
-    ...animal,
-    name: body.name || animal.name,
-    scientificName: body.scientificName || animal.scientificName,
-    speed: body.speed || animal.speed,
-    class: body.class || animal.class,
-    domain: body.domain || animal.domain,
-    family: body.family || animal.family,
+  const animalData = {
+    name: String(body.name),
+    scientificName: String(body.scientificName),
+    speed: Number(body.speed),
+    class: String(body.class),
+    domain: String(body.domain),
+    family: String(body.family),
   };
 
-  const updatedAnimals = animals.map((animal) => {
-    if (animal.id === id) {
-      return newAnimal;
-    } else {
-      return animal;
-    }
+  const updatedAnimal = await prisma.animal.update({
+    where: { id },
+    data: animalData,
   });
-
-  animals = updatedAnimals;
 
   return c.json({
     message: `Updated animal with id ${id}`,
-    animal: newAnimal,
+    updatedAnimal,
   });
 });
 

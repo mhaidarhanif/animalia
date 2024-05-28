@@ -1,20 +1,15 @@
-export type Animal = {
-  id: number;
-  name: string;
-  scientificName?: string;
-  speed?: number;
-  class?: string;
-  domain?: string;
-  family?: string;
-};
+import { type Animal } from "@prisma/client";
 
-export const dataAnimals: Animal[] = [
+export type DataAnimal = Omit<Animal, "createdAt" | "updatedAt">;
+
+export const dataAnimals: DataAnimal[] = [
   {
     id: 1,
     name: "Bear",
     scientificName: "Ursidae",
     class: "Mammalia",
     domain: "Eukaryota",
+    family: "",
     speed: 48, // km/h
   },
   {
