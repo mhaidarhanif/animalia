@@ -1,5 +1,5 @@
 # Use the official Node.js image from the Docker Hub
-FROM oven/bun:alpine
+FROM node:lts-alpine
 
 # Create and change to the app directory
 WORKDIR /usr/src/app
@@ -8,7 +8,9 @@ WORKDIR /usr/src/app
 COPY . .
 
 # Install app dependencies
-RUN bun install
+RUN npm install
+
+RUN npm run generate
 
 # Run the application
-CMD ["bun", "run", "src/index.ts"]
+CMD ["npm", "start"]
