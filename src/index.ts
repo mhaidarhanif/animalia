@@ -109,6 +109,8 @@ app.put("/animals/:id", async (c) => {
   });
 });
 
-console.log("Animalia API is running");
+const port = Number(process.env.PORT) || 3000;
 
-serve({ fetch: app.fetch });
+console.log(`Animalia API is running on :${port}`);
+
+serve({ fetch: app.fetch, port });
