@@ -10,8 +10,5 @@ COPY . .
 # Install app dependencies
 RUN bun install
 
-# Bind the app to port 3000
-EXPOSE 3000
-
 # Run the application
 CMD ["bun", "start"]
