@@ -1,33 +1,24 @@
 import { type Animal } from "@prisma/client";
 
-export type DataAnimal = Omit<Animal, "createdAt" | "updatedAt">;
+export type DataAnimal = Omit<Animal, "id" | "createdAt" | "updatedAt">;
 
 export const dataAnimals: DataAnimal[] = [
   {
-    id: 1,
+    slug: "bear",
     name: "Bear",
-    scientificName: "Ursidae",
-    class: "Mammalia",
-    domain: "Eukaryota",
-    family: "",
-    speed: 48, // km/h
+    speed: 48,
+    color: "brown",
   },
   {
-    id: 2,
+    slug: "cat",
     name: "Cat",
-    scientificName: "Felis catus",
-    class: "Mammalia",
-    domain: "Eukaryota",
-    family: "Felidae",
-    speed: 48, // km/h
+    speed: 48,
+    color: "orange",
   },
   {
-    id: 3,
+    slug: "dog",
     name: "Dog",
-    scientificName: "Canis lupus familiaris",
-    class: "Mammalia",
-    domain: "Eukaryota",
-    family: "Canidae",
-    speed: 60, // km/h
+    speed: 60,
+    color: "white",
   },
 ];

@@ -21,7 +21,10 @@ app.post("/animals/seed", async (c) => {
 });
 
 app.get("/", (c) => {
-  return c.json({ message: "Hello world" });
+  return c.json({
+    message: "Animalia API",
+    animals: "/animals",
+  });
 });
 
 app.get("/animals", async (c) => {
@@ -30,7 +33,7 @@ app.get("/animals", async (c) => {
 });
 
 app.get("/animals/:id", async (c) => {
-  const id = Number(c.req.param("id"));
+  const id = c.req.param("id");
 
   const animal = await prisma.animal.findUnique({
     where: { id },
@@ -48,12 +51,10 @@ app.post("/animals", async (c) => {
   const body = await c.req.json();
 
   const animalData = {
+    slug: String(body.slug),
     name: String(body.name),
-    scientificName: String(body.scientificName),
     speed: Number(body.speed),
-    class: String(body.class),
-    domain: String(body.domain),
-    family: String(body.family),
+    color: String(body.family),
   };
 
   const animal = await prisma.animal.create({
@@ -73,7 +74,7 @@ app.delete("/animals", async (c) => {
 });
 
 app.delete("/animals/:id", async (c) => {
-  const id = Number(c.req.param("id"));
+  const id = c.req.param("id");
 
   const deletedAnimal = await prisma.animal.delete({
     where: { id },
@@ -86,16 +87,14 @@ app.delete("/animals/:id", async (c) => {
 });
 
 app.put("/animals/:id", async (c) => {
-  const id = Number(c.req.param("id"));
+  const id = c.req.param("id");
   const body = await c.req.json();
 
   const animalData = {
+    slug: String(body.slug),
     name: String(body.name),
-    scientificName: String(body.scientificName),
     speed: Number(body.speed),
-    class: String(body.class),
-    domain: String(body.domain),
-    family: String(body.family),
+    color: String(body.family),
   };
 
   const updatedAnimal = await prisma.animal.update({
