@@ -2,8 +2,7 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 
-import { dataAnimals } from "./data/animals.ts";
-import { prisma } from "./lib/db.ts";
+import { prisma } from "./lib/db";
 
 const app = new Hono();
 
@@ -15,13 +14,6 @@ app.use(logger());
 // `/animals`     | `DELETE` | Delete all animals  |
 // `/animals/:id` | `DELETE` | Delete animal by id |
 // `/animals/:id` | `PUT`    | Update animal by id |
-
-app.post("/animals/seed", async (c) => {
-  const animals = await prisma.animal.createMany({
-    data: dataAnimals,
-  });
-  return c.json(animals);
-});
 
 app.get("/", (c) => {
   return c.json({
@@ -35,16 +27,19 @@ app.get("/animals", async (c) => {
   return c.json(animals);
 });
 
-app.get("/animals/:id", async (c) => {
-  const id = c.req.param("id");
+app.get("/animals/:slug", async (c) => {
+  const slug = c.req.param("slug");
 
   const animal = await prisma.animal.findUnique({
-    where: { id },
+    where: { slug },
   });
 
   if (!animal) {
     c.status(404);
-    return c.json({ message: "Animal not found" });
+    return c.json({
+      message: "Animal not found",
+      slug,
+    });
   }
 
   return c.json(animal);

@@ -1,27 +1,32 @@
 {
   "name": "animalia",
-  "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "start": "tsx src/index.ts",
-    "generate": "prisma generate",
-    "migrate": "prisma migrate dev",
-    "migrate:deploy": "prisma migrate deploy",
-    "seed": "prisma db seed"
+    "dev": "bun run --hot src/index.ts",
+    "start": "bun run src/index.ts",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:build": "docker compose up -d --build",
+    "docker:prod": "docker compose up -f docker-compose.prod.yaml -d",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:gen": "prisma generate --no-hints",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.11.1",
-    "@prisma/client": "^5.20.0",
-    "@types/node": "^20.12.12",
+    "@prisma/client": "^6.0.1",
     "dotenv": "^16.4.5",
-    "hono": "^4.4.0"
+    "hono": "^4.6.3",
+    "slugify": "^1.6.6"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
-    "prisma": "^5.20.0",
+    "@types/bun": "latest",
+    "@types/node": "^20.12.12",
+    "prisma": "^6.0.1",
     "tsx": "^4.7.1"
   }
 }

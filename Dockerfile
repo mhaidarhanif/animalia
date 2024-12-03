@@ -1,5 +1,6 @@
-# Use the official Node.js image from the Docker Hub
-FROM node:lts-alpine
+# Use the official Bun image with Debian Linux
+# Oven is the company name, the creator of Bun
+FROM oven/bun:debian
 
 # Create and change to the app directory
 WORKDIR /usr/src/app
@@ -7,10 +8,11 @@ WORKDIR /usr/src/app
 # Copy app files
 COPY . .
 
-# Install app dependencies
-RUN npm install
+# Install dependencies
+RUN bun install --frozen-lockfile
 
-RUN npm run generate
+# Generate Prisma
+RUN bun db:gen
 
 # Run the application
-CMD ["npm", "start"]
+CMD ["bun", "start"]
