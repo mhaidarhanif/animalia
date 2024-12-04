@@ -27,6 +27,13 @@ Copy and edit `.env` file:
 cp .env.example .env
 ```
 
+Setup database:
+
+```sh
+# Run database only
+docker:up
+```
+
 Install dependencies:
 
 ```sh
@@ -38,6 +45,13 @@ Migrate database and generate Prisma Client:
 ```sh
 bun db:migrate
 # prisma migrate dev && prisma generate
+```
+
+Seed initial products:
+
+```sh
+bun db:seed
+# prisma db seed
 ```
 
 Run development server:
